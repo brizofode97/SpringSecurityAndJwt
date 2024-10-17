@@ -1,0 +1,34 @@
+//NOTE: Code de la chaine de filtre
+-http.csrf(AbstractHttpConfigurer::disable) : Ce code permet de désactiver la protection contre les attaques
+csrf(Cross Site Request fogery qui veut dire en français Falsification des requetes intersites). Cette dernière est désactiver car les
+clients(comme Angular) ne sont pas vulnérables par rapport à ces attaques, de plus les API Rest sont sans états. Ceci est plus géré par
+les API avec session(stateful).
+-http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) : Cette méthode permet de cconfigurer la
+gestion des sessions dans Spring Security. En le définissant à "STATELESS" permet d'indiquer que l'application ne doit pas utiliser
+de sessions pour gérer les utilisateurs.
+-httpBasic(Customizer.withDefaults()): Cette méthode permet d'activer l'authentification basic avec les paramètres par défaut.
+Cela indique qu'on utilise une authentification simpe où les identifiants(nom et mot de passe) sont envoyés à chaque requete dans l'entete
+"Authorization".
+Une API Rest reçoit un Jwt avec la requete entrante donc on ne peut pas utilisé le "httpBasic(...)". Donc on va se servir d'un filter de
+sécurité "BearerTokenAuthenticationFilter" en utilisant la fonction de "HttpSecurity"
+".oauht2RessourceServer(oAuth2 -> oAuth2.jwt(Customizer.withDefault))".
+
+//NOTE: Code de la clé générée pour le decodeur Jwt
+-"JwtDecode" est une interface fournie par Spring Security pour décoder et valider des tokens Jwt. Son role principal est de transformer des
+tokens Jwt encodé(généralement sous forme de chaine de caractère) en un objet jwt, tout en vérifiant l'intégralité du token et en validant
+certaines de ces parties, comme la signature, la date d'expiration et les révendications(claims).
+-"SecretKeySpec" est une classe en java qui permet de créer une clé cryptographique basée sur des données brutes, telles qu'une chaine de
+caractère ou des octets. Elle est utilisée pour spécifier une clé sécrète qui peut ensuite etre utiliséé dans des algorithmes
+de chiffrement, déchiffrement ou de signature comme AES, HMAC, RSA.
+-"NimbusJwtDecoder.withSecret(secretKey)" : permet de créer un décodeur Jwt basé sur la clé secrète "secretKey". Donc Le JWT sera vérifié
+par la clé "secretKey".
+-"macAlgorithm(MacAlgorithm.HS256)" : Spécifie que l'algorithme utilisé pour signer et vérifier les JWT est HS256 (HMAC avec SHA-256).
+HS256 est un algorithme symétrique où la même clé est utilisée à la fois pour signer et pour vérifier le JWT.
+-L'objet de la classe "JwtEncodeParameters" est généré à partir de l'objet de la classe "JwtClaimsSet". "JwtEncoderParameters" permet
+d'encoder les informations necessaires, notament l'entete et les claims. L'entete permet de préciser la méthode de signature.
+Cet objet "JwtClaimsSet" représente les claims(révendication) d'un Jwt. Il regroupe toutes les informations importantes qui
+seront incluses dans le corps du Jwt. Voici certaines des informations :
+-issuer("Self"): permet d'indiquer l'émetteur du token. Il peut etre un nom arbitraire.
+-issuedAt(now): la date à laquelle le token a été généré ; ici c'est l'instant actuel.
+-expiresAt(1, ChronoUnit.DAYS): la date d'expiration du token ; fixé ici à un jour après sa création.
+-subjet(nom): le sujet du token ; correspondant au nom de l'utiisateur.

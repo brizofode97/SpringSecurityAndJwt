@@ -1,0 +1,12 @@
+Une clé symétrique signifie que la meme secret est utilisé pour le chiffrement et le déchiffrement. Ce qui n'est pas utilisé en production.
+En production, on utilise une clé asymétrique comme exemple une paire public/privée de clés RSA.
+Une API Rest reçoit un Jwt avec la requete entrante. Pour cela nous allons nous servir d'un filtre de sécurité appelé
+"BearerTokenAuthenticationFiter" dans notre chaine de filter. Et ensuite, nous allons créer un décodeur avec un clé sécrète pour décoder
+les informations dans le token Jwt contenu dans une requete qui possède un "Bearer Token". Il faut aussi pouvoir fournir un token aux
+
+Lorsqu'on utilise un authentification basic avec la méthode "HttpBasic(...)", Spring Security va mettre place une implementation de
+l'interface "Authentification" contenant certains informations de l'utilisateur.
+Une API peut être sécurisée grâce à un mécanisme de validation de JWT implémenté au sein de l’API grâce à Spring Security.
+Le module OAuth2 Resource Server de Spring nous offre un filtre de servlet prêt à l'emploi pour valider un JWT.
+La génération d’un token est rendue possible grâce à différentes classes/interfaces de Spring Security comme JwtClaimsSet,
+JwtEncoderParameters ou encore JwtEncoder.
